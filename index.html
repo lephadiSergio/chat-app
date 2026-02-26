@@ -1,57 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Sergio Chat</title>
+  <title>A Little Something 👀</title>
   <style>
-    body { 
-      font-family: Arial; 
-      max-width: 600px; 
-      margin: auto; 
-      padding: 20px;
+    body {
+      background: #0f0f1a;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding: 40px;
     }
 
-    #chat { 
-      height: 350px; 
-      overflow-y: auto; 
-      border: 1px solid #ccc; 
-      padding: 10px; 
-      margin-bottom: 10px;
-      background: #f9f9f9;
+    .card {
+      background: #1c1c2e;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 20px #7f00ff;
     }
 
-    input { 
-      padding: 10px; 
-      width: 75%; 
-    }
-
-    button { 
-      padding: 10px; 
+    button {
+      padding: 12px 25px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
+      font-size: 16px;
     }
 
-    p {
-      margin: 5px 0;
+    .yes { background: #7f00ff; color: white; }
+    .no { background: #ff0055; color: white; }
+
+    input {
+      padding: 10px;
+      width: 80%;
+      margin-top: 15px;
+      border-radius: 8px;
+      border: none;
     }
+
+    .hidden { display: none; }
   </style>
 </head>
-
 <body>
 
-<h2>🔥 Sergio 2-Person Chat</h2>
-
-<div id="chat"></div>
-
-<input type="text" id="messageInput" placeholder="Type message...">
-<button onclick="sendMessage()">Send</button>
+<div class="card" id="content">
+  <h2>Are you curious enough to find out? 👀</h2>
+  <button class="yes" onclick="startJourney(true)">Yes 💜</button>
+  <button class="no" onclick="startJourney(false)">No 🖤</button>
+</div>
 
 <script type="module">
 
-// ✅ Import Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded } 
+import { getDatabase, ref, push } 
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-// ✅ Your Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCgW8YeIOsxgduZPARSOfUJ5M6QwSyECEY",
   authDomain: "sergio-chat.firebaseapp.com",
@@ -62,39 +67,78 @@ const firebaseConfig = {
   appId: "1:671944420041:web:4eed7bf6453a181302fb18"
 };
 
-// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// ✅ Database reference
-const chatRef = ref(db, "messages");
+const content = document.getElementById("content");
 
-// ✅ Send Message
-window.sendMessage = function() {
-  const input = document.getElementById("messageInput");
+window.startJourney = function(answer) {
 
-  if (input.value.trim() === "") return;
-
-  push(chatRef, {
-    text: input.value,
+  push(ref(db, "mbali_responses"), {
+    firstResponse: answer,
     timestamp: Date.now()
   });
 
-  input.value = "";
+  if (!answer) {
+    content.innerHTML = `
+      <h2>🥺💔</h2>
+      <p>Okay… I guess some mysteries remain unsolved.</p>
+      <p>*sad primary school music plays*</p>
+    `;
+    return;
+  }
+
+  content.innerHTML = `
+    <h3>This is my version of the letters we used to write in primary 😄</h3>
+    <p>Hi Mbali 😂 you probably saw the name from the link but hi Mbali…</p>
+    <p>What is your name? 😌</p>
+    <input id="nameInput" placeholder="Type here...">
+    <br>
+    <button class="yes" onclick="nextStep()">Continue 💌</button>
+  `;
 };
 
-// ✅ Listen for new messages
-onChildAdded(chatRef, (data) => {
-  const chat = document.getElementById("chat");
+window.nextStep = function() {
 
-  const message = document.createElement("p");
-  message.textContent = data.val().text;
+  const name = document.getElementById("nameInput").value;
 
-  chat.appendChild(message);
+  push(ref(db, "mbali_responses"), {
+    nameResponse: name,
+    timestamp: Date.now()
+  });
 
-  // Auto-scroll
-  chat.scrollTop = chat.scrollHeight;
-});
+  content.innerHTML = `
+    <p>You'd wonder why this way? 👀</p>
+    <p>Well… I thought it would be interesting 😄</p>
+    <p>I tried running after you today but you were already quite a distance away… but that doesn't matter.</p>
+    <p>My name is Sergio. And to be honest… I find you quite beautiful 🌸</p>
+    <p>Intwana would love the chance yokuz'bambela intombi enhle 😌</p>
+    <h3>Do you want to continue? 💭</h3>
+    <button class="yes" onclick="finalStep(true)">Yes 😊</button>
+    <button class="no" onclick="finalStep(false)">No 😅</button>
+  `;
+};
+
+window.finalStep = function(answer) {
+
+  push(ref(db, "mbali_responses"), {
+    continueResponse: answer,
+    timestamp: Date.now()
+  });
+
+  if (answer) {
+    content.innerHTML = `
+      <h2>😌💜</h2>
+      <p>Text me on WhatsApp:</p>
+      <h3>064 528 2929</h3>
+    `;
+  } else {
+    content.innerHTML = `
+      <h2>😭😭</h2>
+      <p>Hey… you can't blame a guy for trying 😅</p>
+    `;
+  }
+};
 
 </script>
 
