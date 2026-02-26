@@ -178,12 +178,19 @@ window.finalStep = function(answer) {
 
   if (answer) {
     content.innerHTML = `
-      <h2>😌💜</h2>
-      <p>If you're willing…</p>
+      <h2>🥺💜</h2>
+      <div class="typewriter" id="textArea"></div>
+      <br>
       <a class="whatsapp" href="https://wa.me/27645282929" target="_blank">
         💚 Text me on WhatsApp
       </a>
     `;
+
+    typeWriter(
+      "If you are willing…\n\nCan I please have your number? 🥺\nOr you can just text me instead… 😌",
+      document.getElementById("textArea")
+    );
+
   } else {
     content.innerHTML = `
       <h2>😭😭</h2>
