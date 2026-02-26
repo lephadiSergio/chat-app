@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>A Little Something 👀</title>
+  <title>👀 A Little Something</title>
   <style>
     body {
-      background: #0f0f1a;
+      background: linear-gradient(135deg, #0f0f1a, #1a0033);
       color: white;
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       text-align: center;
       padding: 40px;
+      overflow-x: hidden;
     }
 
     .card {
       background: #1c1c2e;
       padding: 30px;
       border-radius: 15px;
-      max-width: 600px;
+      max-width: 650px;
       margin: auto;
-      box-shadow: 0 0 20px #7f00ff;
+      box-shadow: 0 0 30px #7f00ff;
+      animation: fadeIn 1.2s ease-in-out;
     }
 
     button {
@@ -27,6 +29,12 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 16px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px white;
     }
 
     .yes { background: #7f00ff; color: white; }
@@ -38,11 +46,37 @@
       margin-top: 15px;
       border-radius: 8px;
       border: none;
+      font-size: 15px;
     }
 
-    .hidden { display: none; }
+    a.whatsapp {
+      display: inline-block;
+      background: #25D366;
+      padding: 12px 25px;
+      border-radius: 8px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 15px;
+      transition: 0.3s;
+    }
+
+    a.whatsapp:hover {
+      box-shadow: 0 0 15px #25D366;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .typewriter {
+      min-height: 60px;
+      font-size: 18px;
+    }
   </style>
 </head>
+
 <body>
 
 <div class="card" id="content">
@@ -72,6 +106,21 @@ const db = getDatabase(app);
 
 const content = document.getElementById("content");
 
+function typeWriter(text, element, speed = 35, callback = null) {
+  element.innerHTML = "";
+  let i = 0;
+  function typing() {
+    if (i < text.length) {
+      element.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typing, speed);
+    } else if (callback) {
+      callback();
+    }
+  }
+  typing();
+}
+
 window.startJourney = function(answer) {
 
   push(ref(db, "mbali_responses"), {
@@ -82,20 +131,20 @@ window.startJourney = function(answer) {
   if (!answer) {
     content.innerHTML = `
       <h2>🥺💔</h2>
-      <p>Okay… I guess some mysteries remain unsolved.</p>
-      <p>*sad primary school music plays*</p>
+      <p>Okay… I respect that.</p>
+      <p>Some mysteries remain unsolved.</p>
     `;
     return;
   }
 
   content.innerHTML = `
-    <h3>This is my version of the letters we used to write in primary 😄</h3>
-    <p>Hi Mbali 😂 you probably saw the name from the link but hi Mbali…</p>
-    <p>What is your name? 😌</p>
-    <input id="nameInput" placeholder="Type here...">
+    <div class="typewriter" id="textArea"></div>
+    <input id="nameInput" placeholder="Before we continue... what's your name? 😄">
     <br>
     <button class="yes" onclick="nextStep()">Continue 💌</button>
   `;
+
+  typeWriter("This is my version of the letters we used to write in primary 😄\n\nHi Mbali 😂 you probably saw the name from the link but hi Mbali…", document.getElementById("textArea"));
 };
 
 window.nextStep = function() {
@@ -108,15 +157,16 @@ window.nextStep = function() {
   });
 
   content.innerHTML = `
-    <p>You'd wonder why this way? 👀</p>
-    <p>Well… I thought it would be interesting 😄</p>
-    <p>I tried running after you today but you were already quite a distance away… but that doesn't matter.</p>
-    <p>My name is Sergio. And to be honest… I find you quite beautiful 🌸</p>
-    <p>Intwana would love the chance yokuz'bambela intombi enhle 😌</p>
+    <div class="typewriter" id="textArea"></div>
     <h3>Do you want to continue? 💭</h3>
     <button class="yes" onclick="finalStep(true)">Yes 😊</button>
     <button class="no" onclick="finalStep(false)">No 😅</button>
   `;
+
+  typeWriter(
+    "You'd wonder why this way? 👀\n\nWell… I thought it would be interesting.\nI tried running after you today but you were already quite a distance away… but that doesn't matter.\n\nMy name is Sergio.\nAnd to be honest… I find you quite beautiful 🌸\nIntwana would love the chance yokuz'bambela intombi enhle 😌",
+    document.getElementById("textArea")
+  );
 };
 
 window.finalStep = function(answer) {
@@ -129,8 +179,10 @@ window.finalStep = function(answer) {
   if (answer) {
     content.innerHTML = `
       <h2>😌💜</h2>
-      <p>Text me on WhatsApp:</p>
-      <h3>064 528 2929</h3>
+      <p>If you're willing…</p>
+      <a class="whatsapp" href="https://wa.me/27645282929" target="_blank">
+        💚 Text me on WhatsApp
+      </a>
     `;
   } else {
     content.innerHTML = `
