@@ -1,82 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>👀 A Little Something</title>
   <style>
     body {
       background: linear-gradient(135deg, #0f0f1a, #1a0033);
       color: white;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
-      padding: 40px;
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       overflow-x: hidden;
     }
 
     .card {
       background: #1c1c2e;
-      padding: 30px;
-      border-radius: 15px;
-      max-width: 650px;
-      margin: auto;
-      box-shadow: 0 0 30px #7f00ff;
-      animation: fadeIn 1.2s ease-in-out;
+      padding: 40px 30px;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 0 40px rgba(127, 0, 255, 0.4);
+      animation: fadeIn 1s ease-out;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
+    h2 { margin-bottom: 25px; color: #b388ff; }
+
     button {
-      padding: 12px 25px;
+      padding: 14px 28px;
       margin: 10px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 16px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      font-weight: 600;
+      transition: all 0.3s ease;
     }
 
     button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 15px white;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
     }
 
     .yes { background: #7f00ff; color: white; }
-    .no { background: #ff0055; color: white; }
+    .no { background: #444; color: #bbb; font-size: 14px; }
 
     input {
-      padding: 10px;
-      width: 80%;
-      margin-top: 15px;
+      padding: 12px;
+      width: 85%;
+      margin: 20px 0;
       border-radius: 8px;
-      border: none;
-      font-size: 15px;
+      border: 1px solid #444;
+      background: #0f0f1a;
+      color: white;
+      font-size: 16px;
+      outline: none;
     }
 
-    a.whatsapp {
+    input:focus { border-color: #7f00ff; box-shadow: 0 0 10px #7f00ff; }
+
+    .whatsapp {
       display: inline-block;
       background: #25D366;
       padding: 12px 25px;
-      border-radius: 8px;
+      border-radius: 10px;
       color: white;
       text-decoration: none;
       font-weight: bold;
-      margin-top: 15px;
+      margin-top: 20px;
       transition: 0.3s;
     }
 
-    a.whatsapp:hover {
-      box-shadow: 0 0 15px #25D366;
+    .typewriter {
+      min-height: 80px;
+      font-size: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      color: #e0e0e0;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-
-    .typewriter {
-      min-height: 60px;
-      font-size: 18px;
     }
   </style>
 </head>
-
 <body>
 
 <div class="card" id="content">
@@ -86,127 +100,103 @@
 </div>
 
 <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getDatabase, ref, push } 
-from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyCgW8YeIOsxgduZPARSOfUJ5M6QwSyECEY",
+    authDomain: "sergio-chat.firebaseapp.com",
+    databaseURL: "https://sergio-chat-default-rtdb.firebaseio.com",
+    projectId: "sergio-chat",
+    storageBucket: "sergio-chat.firebasestorage.app",
+    messagingSenderId: "671944420041",
+    appId: "1:671944420041:web:4eed7bf6453a181302fb18"
+  };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCgW8YeIOsxgduZPARSOfUJ5M6QwSyECEY",
-  authDomain: "sergio-chat.firebaseapp.com",
-  databaseURL: "https://sergio-chat-default-rtdb.firebaseio.com",
-  projectId: "sergio-chat",
-  storageBucket: "sergio-chat.firebasestorage.app",
-  messagingSenderId: "671944420041",
-  appId: "1:671944420041:web:4eed7bf6453a181302fb18"
-};
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+  const content = document.getElementById("content");
 
-const content = document.getElementById("content");
-
-function typeWriter(text, element, speed = 35, callback = null) {
-  element.innerHTML = "";
-  let i = 0;
-  function typing() {
-    if (i < text.length) {
-      element.innerHTML += text.charAt(i);
-      i++;
-      setTimeout(typing, speed);
-    } else if (callback) {
-      callback();
+  function typeWriter(text, element, speed = 40, callback = null) {
+    element.innerHTML = "";
+    let i = 0;
+    function typing() {
+      if (i < text.length) {
+        element.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typing, speed);
+      } else if (callback) {
+        callback();
+      }
     }
-  }
-  typing();
-}
-
-window.startJourney = function(answer) {
-
-  push(ref(db, "mbali_responses"), {
-    firstResponse: answer,
-    timestamp: Date.now()
-  });
-
-  if (!answer) {
-    content.innerHTML = `
-      <h2>🥺💔</h2>
-      <p>Okay… I respect that.</p>
-      <p>i might just not bother you again..</p>
-    `;
-    return;
+    typing();
   }
 
-  content.innerHTML = `
-    <div class="typewriter" id="textArea"></div>
-    <input id="nameInput" placeholder="Before we continue... what's your name? 😄">
-    <br>
-    <button class="yes" onclick="nextStep()">Continue 💌</button>
-  `;
+  window.startJourney = function(answer) {
+    push(ref(db, "mbali_responses"), { firstResponse: answer, timestamp: Date.now() });
 
-  typeWriter("This is my version of the letters we used to write in primary 😄\n\nHi Mbali 😂 you probably saw the name from the link but hi Mbali…", document.getElementById("textArea"));
-};
-
-window.nextStep = function() {
-
-  const name = document.getElementById("nameInput").value;
-
-  push(ref(db, "mbali_responses"), {
-    nameResponse: name,
-    timestamp: Date.now()
-  });
-
-  content.innerHTML = `
-    <div class="typewriter" id="textArea"></div>
-    <h3>Do you want to continue? 💭</h3>
-    <button class="yes" onclick="finalStep(true)">Yes 😊</button>
-    <button class="no" onclick="finalStep(false)">No 😅</button>
-  `;
-
-  typeWriter(
-    "You'd wonder why this way? 👀\n\nWell… I thought it would be interesting.\nI tried running after you today but you were already quite a distance away… but that doesn't matter.\n\nMy name is Sergio.\nAnd to be honest… I find you quite beautiful 🌸\nIntwana would love the chance yokuz'bambela intombi enhle 😌",
-    document.getElementById("textArea")
-  );
-};
-
-window.finalStep = function(answer) {
-
-  push(ref(db, "mbali_responses"), {
-    continueResponse: answer,
-    timestamp: Date.now()
-  });
-
-  if (answer) {
+    if (!answer) {
+      content.innerHTML = `<h2>🥺💔</h2><p>Okay... I respect that.</p><p>I'll leave you be.</p>`;
+      return;
+    }
 
     content.innerHTML = `
-      <h2>🥺💜</h2>
       <div class="typewriter" id="textArea"></div>
-      <br><br>
-      <input id="numberInput" placeholder="If you're comfortable... type your number here 📱">
+      <input id="nameInput" placeholder="Before we continue... what's your name? 😄">
       <br>
-      <button class="yes" onclick="saveNumber()">Submit 💌</button>
-      <br><br>
-      <p>Or… you can just text me instead 😌</p>
-      <a class="whatsapp" href="https://wa.me/27645282929" target="_blank">
-        💚 Text me on WhatsApp
-      </a>
+      <button class="yes" onclick="nextStep()">Continue 💌</button>
+    `;
+    typeWriter("Hi Mbali 😂 you probably saw the name from the link but hi...\nThis is my version of the letters we used to write in primary!", document.getElementById("textArea"));
+  };
+
+  window.nextStep = function() {
+    const nameInput = document.getElementById("nameInput");
+    if (nameInput.value.trim() === "") { alert("I'd love to know your name first! 😊"); return; }
+    
+    push(ref(db, "mbali_responses"), { nameResponse: nameInput.value, timestamp: Date.now() });
+
+    content.innerHTML = `
+      <div class="typewriter" id="textArea"></div>
+      <h3>Do you want to continue? 💭</h3>
+      <button class="yes" onclick="finalStep(true)">Yes 😊</button>
+      <button class="no" onclick="finalStep(false)">No 😅</button>
     `;
 
     typeWriter(
-      "If you are willing…\n\nCan I please have your number? 🥺\nOnly if you're comfortable of course.\n\nNo pressure at all.",
+      "Why this way? Well... I thought it would be interesting.\nI tried running after you today but you were too fast! 🏃💨\n\nMy name is Sergio. To be honest, I find you quite beautiful 🌸\nIntwana would love the chance yokuz'bambela intombi enhle 😌",
       document.getElementById("textArea")
     );
+  };
 
-  } else {
+  window.finalStep = function(answer) {
+    push(ref(db, "mbali_responses"), { continueResponse: answer, timestamp: Date.now() });
 
-    content.innerHTML = `
-      <h2>😭😭</h2>
-      <p>Hey… you can't blame a guy for trying 😅</p>
-    `;
-  }
-};
+    if (answer) {
+      content.innerHTML = `
+        <h2>🥺💜</h2>
+        <div class="typewriter" id="textArea"></div>
+        <input id="numberInput" type="tel" placeholder="Your number? (if you're comfortable) 📱">
+        <br>
+        <button class="yes" onclick="saveNumber()">Submit 💌</button>
+        <p>Or just text me directly:</p>
+        <a class="whatsapp" href="https://wa.me/27645282929" target="_blank">💚 Text me on WhatsApp</a>
+      `;
+      typeWriter("Can I please have your number? 🥺 Only if you're comfortable.\nNo pressure at all.", document.getElementById("textArea"));
+    } else {
+      content.innerHTML = `<h2>😭😭</h2><p>Hey... you can't blame a guy for trying! 😅</p>`;
+    }
+  };
 
+  window.saveNumber = function() {
+    const num = document.getElementById("numberInput").value;
+    if (num.trim() === "") { alert("Even a maybe counts 😅"); return; }
+
+    push(ref(db, "mbali_responses"), { numberResponse: num, timestamp: Date.now() });
+
+    content.innerHTML = `<h2>🥺💜</h2><div class="typewriter" id="textArea"></div>`;
+    typeWriter("Thank you... that genuinely means a lot.\n\nWill text you soon 😌💌", document.getElementById("textArea"));
+  };
 </script>
-
 </body>
 </html>
