@@ -177,21 +177,28 @@ window.finalStep = function(answer) {
   });
 
   if (answer) {
+
     content.innerHTML = `
       <h2>🥺💜</h2>
       <div class="typewriter" id="textArea"></div>
+      <br><br>
+      <input id="numberInput" placeholder="If you're comfortable... type your number here 📱">
       <br>
+      <button class="yes" onclick="saveNumber()">Submit 💌</button>
+      <br><br>
+      <p>Or… you can just text me instead 😌</p>
       <a class="whatsapp" href="https://wa.me/27645282929" target="_blank">
         💚 Text me on WhatsApp
       </a>
     `;
 
     typeWriter(
-      "If you are willing…\n\nCan I please have your number? 🥺\nOr you can just text me instead… 😌",
+      "If you are willing…\n\nCan I please have your number? 🥺\nOnly if you're comfortable of course.\n\nNo pressure at all.",
       document.getElementById("textArea")
     );
 
   } else {
+
     content.innerHTML = `
       <h2>😭😭</h2>
       <p>Hey… you can't blame a guy for trying 😅</p>
